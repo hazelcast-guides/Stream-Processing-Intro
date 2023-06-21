@@ -1,0 +1,102 @@
+////
+Make sure to rename this file to the name of your repository and add the filename to the README. This filename must not conflict with any existing tutorials.
+////
+
+// Describe the title of your article by replacing 'Tutorial template' with the page name you want to publish.
+= Introduction to Stream Processing with Hazelcast
+// Add required variables
+:page-layout: tutorial
+:page-product: cloud 
+:page-categories: Stream Processing, SQL 
+:page-lang: java, python
+:page-enterprise: 
+:page-est-time: 45 mins
+:description: Use Hazecast Viridian to process streaming data; enrich streaming data with data in fast storage; store output in fast storage use Entry Processor to update inventory. 
+
+{description}
+
+// Give some context about the use case for this tutorial. What will the reader learn?
+== Context
+
+image::diagram.jpg[]
+
+In this tutorial, you will build, step by step, a simple e-commerce order processing application. 
+
+Step 1: Connect to the streaming data source.
+Step 2: Import customer and inventory databases.
+Step 3: Generate pick-and-ship order
+Step 4: Generate info for money collection
+Step 5: Update inventory count
+
+// Optional: What does the reader need before starting this tutorial? Think about tools or knowledge. Delete this section if your readers can dive straight into the lesson without requiring any prerequisite knowledge.
+== Before you Begin
+
+This tutorial is designed to be completed in conjunction with the Introduction to Stream Processing with Hazelcast course. Although you can complete this tutorial independently, the course provides operational context and additional information on Hazelcast. 
+
+Before starting this tutorial, make sure that you meet the following prerequisites:
+
+* Set up a Hazelcast Viridian cluster
+* Open a Management Center session with the Viridian cluster
+* Download the repository at https://github.com/hazelcast-guides/Stream-Processing-Intro
+
+
+== Step 1. Connect to the Streaming Data Source
+
+(Insert instructions here for setting up kafka)
+
+. blahdiblah something about generating streaming data 
+
++
+```sql
+CREATE OR REPLACE VIEW orders AS
+  SELECT id,
+
+       CASE WHEN tickRand BETWEEN 0 AND 0.1 THEN '11001'
+            WHEN tickRand BETWEEN 0.1 AND 0.2 THEN '11002'
+            WHEN tickRand BETWEEN 0.2 AND 0.3 THEN '11003'
+            WHEN tickRand BETWEEN 0.3 AND 0.4 THEN '11004'
+            WHEN tickRand BETWEEN 0.4 AND 0.5 THEN '11005'
+            WHEN tickRand BETWEEN 0.5 AND 0.6 THEN '11006'
+            WHEN tickRand BETWEEN 0.6 AND 0.7 THEN '11007'
+            WHEN tickRand BETWEEN 0.7 AND 0.8 THEN '11008'
+            ELSE '11009'
+       END as cust_id, 
+
+       CASE WHEN tickRand*1.5 BETWEEN 0 AND 0.25 THEN 501
+            WHEN tickRand*1.5 BETWEEN 0.25 AND 0.5 THEN 502
+            WHEN tickRand*1.5 BETWEEN 0.5 AND 0.75 THEN 503
+            ELSE 504
+       END as item_num,
+
+       CASE WHEN tickRand*.66 BETWEEN 0 AND .25 THEN 1.0
+            WHEN tickRand*.66 BETWEEN .25 AND .5 THEN 2.0
+            ELSE 3.0
+       END as quantity,
+       order_ts
+FROM
+    (SELECT v as id,
+           RAND(v*v) as tickRand,
+           TO_TIMESTAMP_TZ(v*10 + 1645484400000) as order_ts
+     FROM TABLE(generate_stream(10))); 
+```
+
+== Step 2. Query Streaming Data
+
+////
+Continue the design approach you chose in the previous part and continue it through to the end of the tutorial.
+////
+
+== Step 3. Load Fast Data Store
+
+
+
+== Summary
+
+////
+Summarise what knowledge the reader has gained by completing the tutorial, including a summary of each step's goals (this is a good way to validate whether your tutorial has covered all you need it to.)
+////
+
+
+== See Also
+
+// Optionally, add some links to resources, such as other related guides.
