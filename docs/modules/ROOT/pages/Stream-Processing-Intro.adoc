@@ -22,7 +22,7 @@ image::diagram.jpg[]
 
 In this tutorial, you will build, step by step, a simple e-commerce order processing application. 
 
-Step 1: Connect to the streaming data source.
+Step 1: Set up a streaming data source.
 Step 2: Import customer and inventory databases.
 Step 3: Generate pick-and-ship order
 Step 4: Generate info for money collection
@@ -41,39 +41,23 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 * Download the repository at https://github.com/hazelcast-guides/Stream-Processing-Intro
 
 
-== Step 1. Connect to the Streaming Data Source and Generate Streaming Data
+== Step 1. Generate Streaming Data
 
-In this step, you'll spin up the Kafka server, connect it to your Viridian cluster, use SQL to create the topic in Kafka, then generate data using Hazelcast SQL `generate-stream` function to create randomized customer order information and insert it into Kafka.  
+
+[NOTE]
+====
+This lab uses SQL to simulate an external streaming data source. 
+====
+
+In this step, you will generate a stream of data using the Hazelcast SQL `generate-stream` function to create randomized customer order information.  
 
 image::step1.jpg[]
 
-(Insert instructions here for setting up sandbox environment)
 
-. Create a mapping for the Kafka topic using SQL. This command accomplishes three things:
-* Defines the format of the data coming from the Kafka server.
-* Creates the topic on the Kafka server if it does not exist.
-* Specifies the address of the Kafka server.
-+
-```sql
-CREATE OR REPLACE MAPPING orders(
-     __key BIGINT,
-    cust_id VARCHAR,
-    item_num VARCHAR,
-    quantity SMALLINT,
-    order_ts TIMESTAMP)
-TYPE Kafka
-OPTIONS (
-    'keyFormat' = 'bigint',
-    'valueFormat' = 'json-flat',
-    'bootstrap.servers' = '127.0.0.1:9092');
-
-```
-
-. Generate the streaming data and insert it into Kafka. 
+. Paste the following code into your SQL command line or Management Center SQL window. The code creates a view that is populated by randomly-generated data. 
 +
 ```sql
 CREATE OR REPLACE VIEW orders AS
--- INSERT INTO orders
   SELECT id,
 
        CASE WHEN orderRand BETWEEN 0 AND 0.2 THEN '11001'
@@ -96,12 +80,12 @@ CREATE OR REPLACE VIEW orders AS
        order_ts
 FROM
     (SELECT v as id,
-           RAND(v*v) as orderRand,
+           RAND(v*v*v) as orderRand,
            TO_TIMESTAMP_TZ(v*10 + 1645484400000) as order_ts
      FROM TABLE(generate_stream(7))); 
 ```
 
-. View all data coming from the Kafka server. Note that, because you are viewing a data stream, you will need to press CTRL-C to stop the query. 
+. Verify that the view is generating data. Note that, because you are viewing a data stream, you will need to press CTRL-C to stop the query. 
 +
 ```sql
 SELECT * FROM orders;
@@ -119,7 +103,12 @@ WHERE cust_id='11001';
 == Step 2. Load Fast Data Store
 image::step2.jpg[]
 
-In this step, you'll load the data stores that will be used for stream enrichment and for inventory tracking. 
+[NOTE]
+====
+This lab uses SQL to insert data into the fast data store, simulating a data load from an external data source. 
+====
+
+In this step, you'll load the in-memory data stores that will be used for stream enrichment and for inventory tracking. 
 
 . Create the mapping for the customer database, which will be stored in an IMap.
 +
@@ -140,7 +129,7 @@ OPTIONS (
 . Populate the `customers` map with data.
 +
 ```sql
-INSERT INTO customers VALUES
+SINK INTO customers VALUES
 (1, '11001', 'Smith', 'John', '123 Main St', 'Ames, IA 50012', '515-555-1212'),
 (2, '11002', 'Li', 'Guo', '456 Powell St', 'San Francisco, CA 94108', '415-555-1212'),
 (3, '11003', 'Ivanov', 'Sergei', '999 Brighton Blvd', 'New York, NY 11235','212-555-1212'),
@@ -168,7 +157,7 @@ OPTIONS (
 . Populate the `inventory` database.
 +
 ```sql
-INSERT INTO inventory VALUES
+SINK INTO inventory VALUES
 (1, '501', 1.99, 500),
 (2, '502', 3.99, 500),
 (3, '503', 5.99, 500),
@@ -210,7 +199,27 @@ OPTIONS (
 ```sql
 SELECT * FROM PickOrder;
 ```
-. Join the streaming order data with the customer database. 
+. Join the streaming order data with the customer database to produce records to be added to the `PickOrder` IMap. Only add records if there are sufficient items in inventory.
++
+The following fields will come from the `orders` stream
++
+* Order ID (Use as __key for the IMap)
+* Order timestamp
+* Order item number
+* Order quantity
+* Customer ID
++
+The following fields will come from the `customers` data store.
++
+* Customer last name
+* Customer first name
+* Customer address line 1
+* Customer address line 2
+* Customer phone number
++
+The common data field between `orders` and `customers` is `cust_id`.
++
+The common data field between `orders` and `inventory` is `item_num`.
 +
 [NOTE]
 ====
@@ -241,7 +250,7 @@ INSERT INTO PickOrder
 ```sql
 SELECT * FROM PickOrder;
 ```
-. Create a job that generates the PickOrder. This uses the same `INSERT INTO` syntax as before. Creating a job places this process into the background so it is running continuously without user intervention. 
+. Create a job that generates the PickOrder. Creating a job places the process into the background so it is running continuously without user intervention. 
 +
 ```sql
 CREATE JOB PickOrder AS
@@ -317,11 +326,7 @@ SINK INTO amount_due
 SELECT * FROM amount_due;
 ```
 
-== Step 5: Verify Order Has Shipped
-
-In this step, you will join two streams. You will redirect the output of the PickOrder job to a Kafka topic, then join it to a new stream with shipping information. The output will include 
-
-== Step 6: Update Inventory
+== Step 5: Update Inventory
 
 In this step, you will use the Hazelcast Entry Processor to update the inventory as each order is processed. Entry Processor guarantees that each order is processed in sequence and prevents incorrect calculations from out-of-sequence processing. 
 
