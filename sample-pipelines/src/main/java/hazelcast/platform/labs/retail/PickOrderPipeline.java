@@ -19,9 +19,9 @@ public class PickOrderPipeline {
                 Sources.mapJournal("orders", JournalInitialPosition.START_FROM_OLDEST);
 
         // Here we read a stream of Map.Entry<Integer, Order> from the IMap event journal
-        // We also specify how to obtain timestamp from the event.
+        // We also specify how to obtain a timestamp from the Order.
         // See https://docs.hazelcast.com/hazelcast/5.3/pipelines/building-pipelines#adding-timestamps-to-a-streaming-job
-        // for a discussion.  The map step selects the value part of the map entry so end up with a stream of
+        // for a discussion.  The map step selects the value part of the map entry so we end up with a stream of
         // Orders rather than a stream of map entries
         StreamStage<Order> orders =
                 pipeline.readFrom(orderSource).withTimestamps(entry -> entry.getValue().getTimestamp(), 3000)
