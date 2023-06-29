@@ -99,6 +99,33 @@ SELECT * FROM orders
 WHERE cust_id='11001';
 
 ```
+. Create an ordered view that uses `order_ts` as the watermark and allows for a half-second lag.
++
+```sql
+CREATE OR REPLACE VIEW orders_ordered AS
+SELECT *
+     FROM TABLE(IMPOSE_ORDER(
+          TABLE orders,
+          DESCRIPTOR(order_ts),
+          INTERVAL '0.5' SECONDS
+          )
+     );
+```
+
+. Create a table that totals up the number of items ordered. You need to group the results based on `window_start` and `window_end` timestamps. Run the aggregate calculation every 5 seconds. 
++
+```sql
+SELECT window_start, window_end, SUM(quantity) AS quantity
+FROM TABLE(TUMBLE(
+     TABLE orders_ordered,
+     DESCRIPTOR(order_ts),
+     INTERVAL '5' SECONDS))
+GROUP BY 1,2;
+```
+
+. (OPTIONAL) Download the entire repository for this tutorial (https://github.com/hazelcast-guides/Stream-Processing-Intro). Under the `sample-pipelines` directory, you'll 
+
+(TEST THURSDAY)
 
 == Step 2. Load Fast Data Store
 image::step2.jpg[]
