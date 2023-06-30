@@ -115,6 +115,33 @@ SELECT * FROM orders
 WHERE cust_id='11001';
 
 ```
+<<<<<<< Updated upstream
+=======
+. Create an ordered view that uses `order_ts` as the watermark and allows for a half-second lag.
++
+```sql
+CREATE OR REPLACE VIEW orders_ordered AS
+SELECT *
+     FROM TABLE(IMPOSE_ORDER(
+          TABLE orders,
+          DESCRIPTOR(order_ts),
+          INTERVAL '0.5' SECONDS
+          )
+     );
+```
+
+. Create a table that totals up the number of items ordered. You need to group the results based on `window_start` and `window_end` timestamps. Run the aggregate calculation every 5 seconds. 
++
+```sql
+SELECT window_start, window_end, SUM(quantity) AS quantity
+FROM TABLE(TUMBLE(
+     TABLE orders_ordered,
+     DESCRIPTOR(order_ts),
+     INTERVAL '5' SECONDS))
+GROUP BY 1,2;
+```
+
+>>>>>>> Stashed changes
 
 == Step 2. Load Fast Data Store
 image::step2.jpg[]
@@ -269,15 +296,15 @@ SINK INTO PickOrder
 . From Management Center, under Streaming, select Jobs. You should see the PickOrder job running. Select the job, then click the Suspend button to pause the job.
 
 
-== Step 4: Generate Order Total
+== Step 4: Generate Invoice
 image::step4.jpg[]
 
 In this step, you will perform a three-way join with the streaming order information, the customer database, and the inventory database. The output includes a calculation of the amount due for the order, and is passed to Kafka as an outbound stream to pass to a payment collection system. 
 
-. Create a new topic called `amount_due` on the Kafka server.
+. Create a new topic called `invoice` on the Kafka server.
 +
 ```sql
-CREATE OR REPLACE MAPPING amount_due(
+CREATE OR REPLACE MAPPING invoice(
      __key BIGINT,
     cust_id VARCHAR,
      last_name VARCHAR,
@@ -292,11 +319,11 @@ OPTIONS (
     'valueFormat' = 'json-flat',
     'bootstrap.servers' = '127.0.0.1:9092');
 ```
-. Join the order stream and the customer database to generate the amount due information and publish it to the `amount_due` topic you just created.
+. Join the order stream and the customer database to generate the amount due information and publish it to the `invoice` topic you just created.
 +
 ```sql
-CREATE JOB amount_due AS
-SINK INTO amount_due
+CREATE JOB invoice AS
+SINK INTO invoice
      SELECT 
           ord.id AS __key,
           ord.cust_id AS cust_id,
@@ -311,19 +338,24 @@ SINK INTO amount_due
      JOIN inventory AS inv ON ord.item_num = inv.item_num;
 ```
 
-. Verify that data is being published to the `amount_due` topic.
+. Verify that data is being published to the `invoice` topic.
 +
 ```sql
-SELECT * FROM amount_due;
+SELECT * FROM invoice;
 ```
+== Step 5 (Optional): Examine Java Pipelines
 
+. Download the entire repository for this tutorial (https://github.com/hazelcast-guides/Stream-Processing-Intro). Under the `sample-pipelines` directory, you'll find the Java code that performs the same functions we've just completed. The `domains` subdirectory contains the classes that define the data structures for `orders`, `customers`, `inventory`, `PickOrder`, and `Invoice`. The pipeline code `PickOrderPipeline` and `InvoicePipeline` invokes those classes and generates the same output.
+
+<<<<<<< Updated upstream
 == Step 5: Verify Order Has Shipped
 
 In this step, you will join two streams. You will redirect the output of the PickOrder job to a Kafka topic, then join it to a new stream with shipping information. The output will include 
 
 == Step 6: Update Inventory
+=======
+>>>>>>> Stashed changes
 
-In this step, you will use the Hazelcast Entry Processor to update the inventory as each order is processed. Entry Processor guarantees that each order is processed in sequence and prevents incorrect calculations from out-of-sequence processing. 
 
 
 == Summary
