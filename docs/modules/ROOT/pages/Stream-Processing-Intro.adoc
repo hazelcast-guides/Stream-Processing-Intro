@@ -18,7 +18,7 @@ Make sure to rename this file to the name of your repository and add the filenam
 // Give some context about the use case for this tutorial. What will the reader learn?
 == Context
 
-image::diagram.jpg[]
+image:diagram.jpg[]
 
 In this tutorial, you will build, step by step, a simple e-commerce order processing application. 
 
@@ -51,7 +51,7 @@ This lab uses SQL to simulate an external streaming data source.
 
 In this step, you will generate a stream of data using the Hazelcast SQL `generate-stream` function to create randomized customer order information.  
 
-image::step1.jpg[]
+image:step1.jpg[]
 
 
 . Paste the following code into your SQL command line or Management Center SQL window. The code creates a view that is populated by randomly-generated data. 
@@ -102,7 +102,7 @@ WHERE cust_id='11001';
 STOP HERE IF YOU ARE TAKING THE INTRODUCTION TO STREAM PROCESSING CLASS! Watch the Fast Data Storage lesson before proceeding. 
 
 == Step 2. Load Fast Data Store
-image::step2.jpg[]
+image:step2.jpg[]
 
 [NOTE]
 ====
@@ -172,7 +172,7 @@ SELECT * from inventory;
 
 == Step 3: Generate Warehouse Pick Order
 
-image::step3.jpg[]
+image:step3.jpg[]
 
 In this step, you will join the streaming order information with the customer shipping data to generate a pick and ship order for the inventory warehouse.
 
@@ -280,7 +280,7 @@ SINK INTO PickOrder
 
 
 == Step 4: Generate Order Total
-image::step4.jpg[]
+image:step4.jpg[]
 
 In this step, you will perform a three-way join with the streaming order information, the customer database, and the inventory database. The output includes a calculation of the amount due for the order, and is passed to Kafka as an outbound stream to pass to a payment collection system. 
 
@@ -326,18 +326,23 @@ SINK INTO amount_due
 SELECT * FROM amount_due;
 ```
 
-== Step 5: Update Inventory
+== Step 5 (Optional): Examine Java Pipelines
 
-In this step, you will use the Hazelcast Entry Processor to update the inventory as each order is processed. Entry Processor guarantees that each order is processed in sequence and prevents incorrect calculations from out-of-sequence processing. 
+Download the entire repository from GitHub: https://github.com/hazelcast-guides/Stream-Processing-Intro. Under the Sample Pipelines directory, you will find sample code that performs the same functions as the two pipelines you created in SQL. The supporting classes are also included. 
 
 
 == Summary
 
-////
-Summarise what knowledge the reader has gained by completing the tutorial, including a summary of each step's goals (this is a good way to validate whether your tutorial has covered all you need it to.)
-////
+In this tutorial, you learned to:
+
+* Generate data using SQL
+* Perform basic SQL queries of both streaming data and data in Fast Storage
+* Join stored data to streaming data to generate enriched output
+* Use SQL to submit a job to the stream processing engine
 
 
 == See Also
 
-// Optionally, add some links to resources, such as other related guides.
+* http://training.hazelcast.com/introduction-to-stream-processing[The Introduction to Stream Processing with Hazelcast course]
+* https://docs.hazelcast.com/hazelcast/5.3/pipelines/building-pipelines[Documentation on pipeline concepts]
+* https://docs.hazelcast.com/hazelcast/5.3/sql/sql-overview[Documentation on Hazelcast's implementation of SQL]
