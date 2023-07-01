@@ -99,6 +99,7 @@ SELECT * FROM orders
 WHERE cust_id='11001';
 
 ```
+STOP HERE IF YOU ARE TAKING THE INTRODUCTION TO STREAM PROCESSING CLASS! Watch the Fast Data Storage lesson before proceeding. 
 
 == Step 2. Load Fast Data Store
 image::step2.jpg[]
@@ -283,7 +284,7 @@ image::step4.jpg[]
 
 In this step, you will perform a three-way join with the streaming order information, the customer database, and the inventory database. The output includes a calculation of the amount due for the order, and is passed to Kafka as an outbound stream to pass to a payment collection system. 
 
-. Create a new topic called `amount_due` on the Kafka server.
+. Create a new IMap called `amount_due` on the Kafka server.
 +
 ```sql
 CREATE OR REPLACE MAPPING amount_due(
@@ -295,11 +296,10 @@ CREATE OR REPLACE MAPPING amount_due(
      address2 VARCHAR,
      phone VARCHAR,
      total DECIMAL)
-TYPE Kafka
+TYPE IMap
 OPTIONS (
     'keyFormat' = 'bigint',
-    'valueFormat' = 'json-flat',
-    'bootstrap.servers' = '127.0.0.1:9092');
+    'valueFormat' = 'json-flat');
 ```
 . Join the order stream and the customer database to generate the amount due information and publish it to the `amount_due` topic you just created.
 +
