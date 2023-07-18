@@ -282,9 +282,9 @@ SINK INTO PickOrder
 == Step 4: Generate Order Total
 image:step4.jpg[]
 
-In this step, you will perform a three-way join with the streaming order information, the customer database, and the inventory database. The output includes a calculation of the amount due for the order, and is passed to Kafka as an outbound stream to pass to a payment collection system. 
+In this step, you will perform a three-way join with the streaming order information, the customer database, and the inventory database. The output includes a calculation of the amount due for the order, and is passed to an IMap. This map can then be read by a payment processing system. 
 
-. Create a new IMap called `amount_due` on the Kafka server.
+. Create a new IMap called `amount_due`.
 +
 ```sql
 CREATE OR REPLACE MAPPING amount_due(
@@ -320,7 +320,7 @@ SINK INTO amount_due
      JOIN inventory AS inv ON ord.item_num = inv.item_num;
 ```
 
-. Verify that data is being published to the `amount_due` topic.
+. Verify that data is being published to the `amount_due` map.
 +
 ```sql
 SELECT * FROM amount_due;
