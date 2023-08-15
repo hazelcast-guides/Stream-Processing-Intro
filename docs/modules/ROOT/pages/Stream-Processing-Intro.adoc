@@ -11,7 +11,7 @@ Make sure to rename this file to the name of your repository and add the filenam
 :page-lang: java, python
 :page-enterprise: 
 :page-est-time: 45 mins
-:description: Use Hazecast Viridian to process streaming data; enrich streaming data with data in fast storage; store output in fast storage use Entry Processor to update inventory. 
+:description: Use Hazelcast Viridian Cloud to process streaming data; enrich streaming data with data in fast storage; store output in fast storage use Entry Processor to update inventory. 
 
 {description}
 
@@ -36,8 +36,8 @@ This tutorial is designed to be completed in conjunction with the Introduction t
 
 Before starting this tutorial, make sure that you meet the following prerequisites:
 
-* Set up a Hazelcast Viridian cluster
-* Open a Management Center session with the Viridian cluster
+* Set up a Viridian Cloud cluster
+* Open a Management Center session with the Viridian Cloud cluster
 * Download the repository at https://github.com/hazelcast-guides/Stream-Processing-Intro
 
 
@@ -272,7 +272,7 @@ SINK INTO PickOrder
      JOIN inventory ON ord.item_num = inventory.item_num
      WHERE ord.quantity < inventory.quantity;
 ```
-. From your Viridian console, monitor memory utilization. You should see it increasing.
+. From your Viridian Cloud console, monitor memory utilization. You should see it increasing.
 
 . From Management Center, under Storage, select Maps. You should see the PickOrder map entries increasing.
 
