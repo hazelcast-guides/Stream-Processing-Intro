@@ -228,7 +228,7 @@ Because we are issuing this `INSERT` command interactively via the CLC, the proc
 ==== 
 +
 ```sql
-INSERT INTO PickOrder
+CREATE OR REPLACE VIEW PickOrder
      SELECT 
           ord.id AS __key,
           ord.order_ts AS ts,
