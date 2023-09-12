@@ -221,36 +221,27 @@ The following fields will come from the `customers` data store.
 The common data field between `orders` and `customers` is `cust_id`.
 +
 The common data field between `orders` and `inventory` is `item_num`.
-+
-[NOTE]
-====
-Because we are issuing this `INSERT` command interactively via the CLC, the process will run "live" until you press CTRL-C. We will make this a background job later in this step.
-==== 
+
 +
 ```sql
-CREATE OR REPLACE VIEW PickOrder
-     SELECT 
-          ord.id AS __key,
-          ord.order_ts AS ts,
-          ord.item_num AS item_num,
-          ord.quantity AS quantity,
-          ord.cust_id AS cust_id,
-          cust.last_name AS last_name,
-          cust.first_name AS first_name,
-          cust.address1 AS address1,
-          cust.address2 AS address2,
-          cust.phone AS phone
-     FROM orders AS ord
-     JOIN customers AS cust ON ord.cust_id = cust.cust_id
-     JOIN inventory ON ord.item_num = inventory.item_num
-     WHERE ord.quantity < inventory.quantity;
+SELECT 
+     ord.id AS __key,
+     ord.order_ts AS ts,
+     ord.item_num AS item_num,
+     ord.quantity AS quantity,
+     ord.cust_id AS cust_id,
+     cust.last_name AS last_name,
+     cust.first_name AS first_name,
+     cust.address1 AS address1,
+     cust.address2 AS address2,
+     cust.phone AS phone
+FROM orders AS ord
+JOIN customers AS cust ON ord.cust_id = cust.cust_id
+JOIN inventory ON ord.item_num = inventory.item_num
+WHERE ord.quantity < inventory.quantity;
 ```
 . Press CTRL-C to stop the join.
-. Verify that the `PickOrder` IMap now contains data.
-+
-```sql
-SELECT * FROM PickOrder;
-```
+
 . Create a job that generates the PickOrder. Creating a job places the process into the background so it is running continuously without user intervention. 
 +
 ```sql
@@ -271,6 +262,12 @@ SINK INTO PickOrder
      JOIN customers AS cust ON ord.cust_id = cust.cust_id
      JOIN inventory ON ord.item_num = inventory.item_num
      WHERE ord.quantity < inventory.quantity;
+```
+
+. Verify that the `PickOrder` IMap now contains data.
++
+```sql
+SELECT * FROM PickOrder;
 ```
 . From your Viridian Cloud console, monitor memory utilization. You should see it increasing.
 
