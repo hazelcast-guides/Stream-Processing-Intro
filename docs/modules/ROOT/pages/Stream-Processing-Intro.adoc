@@ -11,7 +11,7 @@ Make sure to rename this file to the name of your repository and add the filenam
 :page-lang: java, python
 :page-enterprise: 
 :page-est-time: 45 mins
-:description: Use Hazelcast Viridian Cloud to process streaming data; enrich streaming data with data in fast storage; store output in fast storage use Entry Processor to update inventory. 
+:description: Use Hazelcast Viridian Cloud to process streaming data, enrich streaming data with data in fast storage, store output in fast storage, and use an entry processor to update inventory. 
 
 {description}
 
@@ -36,8 +36,8 @@ This tutorial is designed to be completed in conjunction with the Introduction t
 
 Before starting this tutorial, make sure that you meet the following prerequisites:
 
-* Set up a Viridian Cloud cluster
-* Open a Management Center session with the Viridian Cloud cluster
+* https://docs.hazelcast.com/cloud/get-started[Set up a Viridian Cloud cluster]
+* https://docs.hazelcast.com/clc/5.3/get-started[Connect the Command Line Client] or open the SQL tab for your cluster
 * Download the repository at https://github.com/hazelcast-guides/Stream-Processing-Intro
 
 
