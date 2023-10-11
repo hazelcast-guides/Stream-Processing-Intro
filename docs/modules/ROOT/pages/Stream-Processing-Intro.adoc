@@ -54,7 +54,7 @@ In this step, you will generate a stream of data using the Hazelcast SQL `genera
 image:step1.jpg[]
 
 
-. Paste the following code into your SQL command line or Management Center SQL window. The code creates a view that is populated by randomly-generated data. 
+. Paste the following code into your CLC command line or cluster SQL tab. The code creates a view that is populated by randomly-generated data. 
 +
 ```sql
 CREATE OR REPLACE VIEW orders AS
