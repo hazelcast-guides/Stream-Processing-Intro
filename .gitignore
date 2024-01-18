@@ -6,6 +6,7 @@ target/
 .project
 .surefire-*
 .DS_Store
+.vscode
 *.iml
 *.ipr
 *.iws
