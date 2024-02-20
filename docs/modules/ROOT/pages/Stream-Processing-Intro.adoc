@@ -45,7 +45,7 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 
 In this step, you will set up connections to an external streaming source and an external database.
 
-image:step1.png[streamsource diagram]
+image:step1.jpg[streamsource diagram]
 
 . If you are using the cloud dashboard, open an SQL tab. If you are using the Command Line Client (CLC), open the CLC connection to your cloud cluster.
 +
