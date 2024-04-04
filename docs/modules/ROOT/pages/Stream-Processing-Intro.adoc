@@ -79,7 +79,7 @@ CREATE OR REPLACE DATA CONNECTION TrainingKafkaConnection
 
 . Paste the following code to subscribe to the streaming topic for sales data. 
 +
-```clc
+```sql
 CREATE OR REPLACE MAPPING "orders_topic"
 EXTERNAL NAME "stream_processing_intro.orders" (
     id bigint,
@@ -97,7 +97,7 @@ OPTIONS (
 
 . Verify that you are receiving streaming data from the topic `orders_topic`.
 +
-```clc
+```sql
 SELECT * from orders_topic;
 ```
 +
@@ -113,7 +113,7 @@ In this step, you'll load the in-memory data stores that will be used for stream
 
 . Connect to the Postgres server.
 +
-```clc
+```sql
 CREATE OR REPLACE DATA CONNECTION TrainingPostgresConnection 
      TYPE JDBC 
      SHARED 
