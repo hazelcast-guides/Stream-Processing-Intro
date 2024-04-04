@@ -292,9 +292,9 @@ WHERE ord.quantity < inventory.quantity;
 ```sql
 CREATE JOB PickOrder AS
 SINK INTO PickOrder
-     SELECT 
+     SELECT
           ord.id AS __key,
-          ord.order_ts AS ts,
+          ord.order_time AS ts,
           ord.item_num AS item_num,
           ord.quantity AS quantity,
           ord.cust_id AS cust_id,
@@ -303,7 +303,7 @@ SINK INTO PickOrder
           cust.address1 AS address1,
           cust.address2 AS address2,
           cust.phone AS phone
-     FROM orders AS ord
+     FROM orders_topic AS ord
      JOIN customers AS cust ON ord.cust_id = cust.cust_id
      JOIN inventory ON ord.item_num = inventory.item_num
      WHERE ord.quantity < inventory.quantity;
