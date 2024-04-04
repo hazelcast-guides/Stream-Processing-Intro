@@ -92,7 +92,7 @@ DATA CONNECTION "TrainingKafkaConnection"
 OPTIONS (
     'keyFormat' = 'varchar',
     'valueFormat' = 'json-flat'
-);
+     );
 ```
 
 . Verify that you are receiving streaming data from the topic `orders_topic`.
